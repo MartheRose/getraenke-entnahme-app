@@ -4,10 +4,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="theme-color" content="#7a1f2b">
+
   <title>Getränke-Entnahme</title>
 
   <style>
+
     * {
       box-sizing: border-box;
       -webkit-tap-highlight-color: transparent;
@@ -34,10 +35,6 @@
       flex-direction: column;
     }
 
-    /* =========================
-       HEADER
-    ========================= */
-
     header {
       background: #7a1f2b;
       color: white;
@@ -51,18 +48,12 @@
     .header-title {
       font-size: clamp(22px, 3vw, 32px);
       font-weight: 700;
-      letter-spacing: 0.5px;
     }
 
     .header-date {
       font-size: clamp(14px, 2vw, 20px);
       text-align: right;
-      opacity: 0.95;
     }
-
-    /* =========================
-       MAIN
-    ========================= */
 
     main {
       flex: 1;
@@ -87,18 +78,6 @@
       color: #3a3430;
     }
 
-    .subtitle {
-      text-align: center;
-      font-size: 20px;
-      margin-top: -20px;
-      margin-bottom: 30px;
-      color: #6b625c;
-    }
-
-    /* =========================
-       MITARBEITER
-    ========================= */
-
     .employee-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -116,17 +95,12 @@
       font-weight: 600;
       color: #3a3430;
       box-shadow: 0 3px 8px rgba(0,0,0,0.06);
-      transition: transform 0.1s, background 0.1s;
     }
 
     .employee-button:active {
       transform: scale(0.97);
       background: #f0e8e4;
     }
-
-    /* =========================
-       GETRÄNKE
-    ========================= */
 
     .selected-employee {
       text-align: center;
@@ -146,7 +120,7 @@
       background: white;
       border: 2px solid #ddd6d0;
       border-radius: 16px;
-      min-height: 100px;
+      min-height: 120px;
       padding: 14px;
       display: flex;
       flex-direction: column;
@@ -186,7 +160,6 @@
       background: #7a1f2b;
       color: white;
       font-size: 30px;
-      line-height: 1;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -202,10 +175,6 @@
       font-size: 28px;
       font-weight: 700;
     }
-
-    /* =========================
-       ZUSAMMENFASSUNG
-    ========================= */
 
     .summary {
       margin-top: 25px;
@@ -260,14 +229,6 @@
       cursor: not-allowed;
     }
 
-    .save-button:not(:disabled):active {
-      transform: scale(0.98);
-    }
-
-    /* =========================
-       ERFOLG
-    ========================= */
-
     .success-screen {
       text-align: center;
       padding-top: 60px;
@@ -290,9 +251,22 @@
       color: #5f5852;
     }
 
-    /* =========================
-       FOOTER
-    ========================= */
+    .error-message {
+      background: #f8d7da;
+      color: #721c24;
+      padding: 15px;
+      border-radius: 10px;
+      margin: 15px 0;
+      text-align: center;
+      display: none;
+    }
+
+    .loading {
+      text-align: center;
+      font-size: 20px;
+      color: #77706a;
+      padding: 40px;
+    }
 
     footer {
       text-align: center;
@@ -301,11 +275,8 @@
       font-size: 13px;
     }
 
-    /* =========================
-       RESPONSIVE
-    ========================= */
-
     @media (min-width: 700px) {
+
       .employee-grid {
         grid-template-columns: repeat(3, 1fr);
       }
@@ -317,9 +288,11 @@
       .product-card {
         min-height: 145px;
       }
+
     }
 
     @media (max-width: 500px) {
+
       header {
         padding: 14px 16px;
       }
@@ -353,7 +326,9 @@
       .quantity-controls {
         gap: 8px;
       }
+
     }
+
   </style>
 
 </head>
@@ -363,39 +338,53 @@
 <div class="app">
 
   <header>
-    <div class="header-title">GETRÄNKE-ENTNAHME</div>
-    <div class="header-date" id="dateTime"></div>
+
+```
+<div class="header-title">
+  GETRÄNKE-ENTNAHME
+</div>
+
+<div class="header-date" id="dateTime"></div>
+```
+
   </header>
 
   <main>
 
 ```
-<!-- =========================
-     BILDSCHIRM 1:
-     MITARBEITER AUSWÄHLEN
-========================== -->
+<!-- MITARBEITER -->
 
 <section id="employeeScreen" class="screen active">
 
-  <h1 class="screen-title">Wer entnimmt Getränke?</h1>
+  <h1 class="screen-title">
+    Wer entnimmt Getränke?
+  </h1>
+
+  <div id="employeeError" class="error-message"></div>
+
+  <div id="employeeLoading" class="loading">
+    Mitarbeiter werden geladen...
+  </div>
 
   <div class="employee-grid" id="employeeGrid"></div>
 
 </section>
 
 
-<!-- =========================
-     BILDSCHIRM 2:
-     GETRÄNKE AUSWÄHLEN
-========================== -->
+<!-- GETRÄNKE -->
 
 <section id="productScreen" class="screen">
 
-  <h1 class="screen-title">Getränke auswählen</h1>
+  <h1 class="screen-title">
+    Getränke auswählen
+  </h1>
 
   <div class="selected-employee" id="selectedEmployee"></div>
 
+  <div id="productError" class="error-message"></div>
+
   <div class="product-grid" id="productGrid"></div>
+
 
   <div class="summary">
 
@@ -404,15 +393,25 @@
     </div>
 
     <div class="summary-list" id="summaryList">
+
       <div style="color:#938a83;">
         Noch keine Getränke ausgewählt.
       </div>
+
     </div>
 
     <div class="summary-total">
-      <span>Gesamt</span>
-      <span id="summaryTotal">0 Flaschen</span>
+
+      <span>
+        Gesamt
+      </span>
+
+      <span id="summaryTotal">
+        0 Flaschen · 0 Liter
+      </span>
+
     </div>
+
 
     <button
       class="save-button"
@@ -420,7 +419,9 @@
       disabled
       onclick="saveWithdrawal()"
     >
+
       ✓ ENTNAHME SPEICHERN
+
     </button>
 
   </div>
@@ -428,16 +429,15 @@
 </section>
 
 
-<!-- =========================
-     BILDSCHIRM 3:
-     ERFOLG
-========================== -->
+<!-- ERFOLG -->
 
 <section id="successScreen" class="screen">
 
   <div class="success-screen">
 
-    <div class="success-icon">✓</div>
+    <div class="success-icon">
+      ✓
+    </div>
 
     <div class="success-title">
       Entnahme gespeichert
@@ -460,300 +460,553 @@
 
 <script>
 
-  /* =====================================
+  /* ==========================================
+     SUPABASE KONFIGURATION
+  ========================================== */
+
+  const SUPABASE_URL =
+    "https://sbiykoqewpotxpliyrsg.supabase.co";
+
+  const SUPABASE_KEY =
+    "sb_publishable_88GzkUHIG028vaNlh2S1RQ_DZqJb_Y7";
+
+
+  /* ==========================================
      DATEN
-  ===================================== */
+  ========================================== */
 
-  const employees = [
-    "Marthe",
-    "Silke",
-    "Nhan",
-    "Jonas",
-    "Dilshod"
-  ];
+  let employees = [];
 
-  const products = [
-    {
-      id: 1,
-      name: "Chardonnay",
-      volume: 0.750
-    },
-    {
-      id: 2,
-      name: "Grauburgunder",
-      volume: 0.750
-    },
-    {
-      id: 3,
-      name: "Riesling",
-      volume: 0.750
-    },
-    {
-      id: 4,
-      name: "Landpartie groß rot",
-      volume: 0.750
-    },
-    {
-      id: 5,
-      name: "Landpartie groß weiß",
-      volume: 0.750
-    },
-    {
-      id: 6,
-      name: "Sander Rosé",
-      volume: 0.375
-    },
-    {
-      id: 7,
-      name: "Sander Rot",
-      volume: 0.375
-    },
-    {
-      id: 8,
-      name: "Sander Weiß",
-      volume: 0.375
-    }
-  ];
-
-
-  /* =====================================
-     AKTUELLER STATUS
-  ===================================== */
+  let products = [];
 
   let selectedEmployee = null;
 
   let quantities = {};
 
 
-  /* =====================================
-     INITIALISIERUNG
-  ===================================== */
+  /* ==========================================
+     SUPABASE REQUEST
+  ========================================== */
 
-  function initialize() {
+  async function supabaseRequest(
+    table,
+    options = {}
+  ) {
 
-    renderEmployees();
+    const url =
+      SUPABASE_URL +
+      "/rest/v1/" +
+      table;
 
-    renderProducts();
+
+    const headers = {
+
+      "apikey":
+        SUPABASE_KEY,
+
+      "Authorization":
+        "Bearer " +
+        SUPABASE_KEY,
+
+      "Content-Type":
+        "application/json",
+
+      "Accept":
+        "application/json"
+
+    };
+
+
+    if (options.returnRepresentation) {
+
+      headers["Prefer"] =
+        "return=representation";
+
+    }
+
+
+    const response =
+      await fetch(
+        url,
+        {
+
+          method:
+            options.method ||
+            "GET",
+
+          headers:
+
+            headers,
+
+          body:
+
+            options.body
+              ? JSON.stringify(
+                  options.body
+                )
+              : undefined
+
+        }
+      );
+
+
+    if (!response.ok) {
+
+      const errorText =
+        await response.text();
+
+      throw new Error(
+        errorText ||
+        "Supabase Fehler"
+      );
+
+    }
+
+
+    const text =
+      await response.text();
+
+
+    if (!text) {
+
+      return null;
+
+    }
+
+
+    return JSON.parse(text);
+
+  }
+
+
+  /* ==========================================
+     APP START
+  ========================================== */
+
+  async function initialize() {
 
     updateDateTime();
 
-    setInterval(updateDateTime, 1000);
+    setInterval(
+      updateDateTime,
+      1000
+    );
+
+
+    try {
+
+      await loadEmployees();
+
+      await loadProducts();
+
+    } catch (error) {
+
+      console.error(
+        error
+      );
+
+    }
 
   }
 
 
-  /* =====================================
-     DATUM & UHRZEIT
-  ===================================== */
+  /* ==========================================
+     MITARBEITER LADEN
+  ========================================== */
 
-  function updateDateTime() {
+  async function loadEmployees() {
 
-    const now = new Date();
+    try {
 
-    const options = {
-      weekday: "long",
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit"
-    };
+      const data =
+        await supabaseRequest(
+          "employees?select=id,name&active=eq.true&order=name"
+        );
 
-    document.getElementById("dateTime").textContent =
-      now.toLocaleDateString("de-DE", options);
+
+      employees =
+        data || [];
+
+
+      document
+        .getElementById(
+          "employeeLoading"
+        )
+        .style.display =
+          "none";
+
+
+      renderEmployees();
+
+    } catch (error) {
+
+      showError(
+        "employeeError",
+        "Mitarbeiter konnten nicht geladen werden."
+      );
+
+      console.error(
+        error
+      );
+
+    }
 
   }
 
 
-  /* =====================================
+  /* ==========================================
+     GETRÄNKE LADEN
+  ========================================== */
+
+  async function loadProducts() {
+
+    try {
+
+      const data =
+        await supabaseRequest(
+          "products?select=id,name,volume_liter,unit&active=eq.true&order=sort_order"
+        );
+
+
+      products =
+        data || [];
+
+
+      renderProducts();
+
+    } catch (error) {
+
+      showError(
+        "employeeError",
+        "Getränke konnten nicht geladen werden."
+      );
+
+      console.error(
+        error
+      );
+
+    }
+
+  }
+
+
+  /* ==========================================
      MITARBEITER ANZEIGEN
-  ===================================== */
+  ========================================== */
 
   function renderEmployees() {
 
-    const grid = document.getElementById("employeeGrid");
+    const grid =
+      document.getElementById(
+        "employeeGrid"
+      );
+
 
     grid.innerHTML = "";
 
-    employees.forEach(employee => {
 
-      const button = document.createElement("button");
+    employees.forEach(
+      employee => {
 
-      button.className = "employee-button";
+        const button =
+          document.createElement(
+            "button"
+          );
 
-      button.textContent = employee;
 
-      button.onclick = function() {
+        button.className =
+          "employee-button";
 
-        selectEmployee(employee);
 
-      };
+        button.textContent =
+          employee.name;
 
-      grid.appendChild(button);
 
-    });
+        button.onclick =
+          function() {
+
+            selectEmployee(
+              employee
+            );
+
+          };
+
+
+        grid.appendChild(
+          button
+        );
+
+      }
+    );
 
   }
 
 
-  /* =====================================
+  /* ==========================================
      MITARBEITER AUSWÄHLEN
-  ===================================== */
+  ========================================== */
 
-  function selectEmployee(employee) {
+  function selectEmployee(
+    employee
+  ) {
 
-    selectedEmployee = employee;
+    selectedEmployee =
+      employee;
+
 
     quantities = {};
 
-    products.forEach(product => {
 
-      quantities[product.id] = 0;
+    products.forEach(
+      product => {
 
-    });
+        quantities[
+          product.id
+        ] = 0;
 
-    document.getElementById("selectedEmployee").textContent =
-      "Entnahme von " + employee;
+      }
+    );
+
+
+    document
+      .getElementById(
+        "selectedEmployee"
+      )
+      .textContent =
+
+        "Entnahme von " +
+        employee.name;
+
 
     updateProductDisplay();
 
-    showScreen("productScreen");
+
+    showScreen(
+      "productScreen"
+    );
 
   }
 
 
-  /* =====================================
+  /* ==========================================
      GETRÄNKE ANZEIGEN
-  ===================================== */
+  ========================================== */
 
   function renderProducts() {
 
-    const grid = document.getElementById("productGrid");
+    const grid =
+      document.getElementById(
+        "productGrid"
+      );
+
 
     grid.innerHTML = "";
 
-    products.forEach(product => {
 
-      const card = document.createElement("div");
+    products.forEach(
+      product => {
 
-      card.className = "product-card";
+        const card =
+          document.createElement(
+            "div"
+          );
 
-      card.id = "product-" + product.id;
 
-      card.innerHTML = `
+        card.className =
+          "product-card";
 
-        <div class="product-name">
-          ${product.name}
-        </div>
 
-        <div class="product-volume">
-          ${formatVolume(product.volume)}
-        </div>
+        card.id =
+          "product-" +
+          product.id;
 
-        <div class="quantity-controls">
 
-          <button
-            class="quantity-button"
-            onclick="changeQuantity(${product.id}, -1)"
-          >
-            −
-          </button>
+        card.innerHTML = `
 
-          <div
-            class="quantity"
-            id="quantity-${product.id}"
-          >
-            0
+          <div class="product-name">
+
+            ${escapeHtml(
+              product.name
+            )}
+
           </div>
 
-          <button
-            class="quantity-button"
-            onclick="changeQuantity(${product.id}, 1)"
-          >
-            +
-          </button>
+          <div class="product-volume">
 
-        </div>
+            ${formatVolume(
+              product.volume_liter
+            )}
 
-      `;
+          </div>
 
-      grid.appendChild(card);
+          <div class="quantity-controls">
 
-    });
+            <button
+
+              class="quantity-button"
+
+              onclick="
+                changeQuantity(
+                  '${product.id}',
+                  -1
+                )
+              "
+
+            >
+              −
+            </button>
+
+
+            <div
+
+              class="quantity"
+
+              id="quantity-${product.id}"
+
+            >
+              0
+            </div>
+
+
+            <button
+
+              class="quantity-button"
+
+              onclick="
+                changeQuantity(
+                  '${product.id}',
+                  1
+                )
+              "
+
+            >
+              +
+            </button>
+
+          </div>
+
+        `;
+
+
+        grid.appendChild(
+          card
+        );
+
+      }
+    );
 
   }
 
 
-  /* =====================================
+  /* ==========================================
      MENGE ÄNDERN
-  ===================================== */
+  ========================================== */
 
-  function changeQuantity(productId, change) {
+  function changeQuantity(
+    productId,
+    change
+  ) {
 
     let newQuantity =
-      quantities[productId] + change;
 
-    if (newQuantity < 0) {
+      quantities[
+        productId
+      ] + change;
+
+
+    if (
+      newQuantity < 0
+    ) {
 
       newQuantity = 0;
 
     }
 
-    quantities[productId] = newQuantity;
+
+    quantities[
+      productId
+    ] = newQuantity;
+
 
     updateProductDisplay();
 
   }
 
 
-  /* =====================================
-     PRODUKT-ANZEIGE AKTUALISIEREN
-  ===================================== */
+  /* ==========================================
+     ANZEIGE AKTUALISIEREN
+  ========================================== */
 
   function updateProductDisplay() {
 
-    products.forEach(product => {
+    products.forEach(
+      product => {
 
-      const quantityElement =
-        document.getElementById(
-          "quantity-" + product.id
-        );
+        const quantityElement =
 
-      const card =
-        document.getElementById(
-          "product-" + product.id
-        );
+          document.getElementById(
+            "quantity-" +
+            product.id
+          );
 
-      quantityElement.textContent =
-        quantities[product.id];
 
-      if (quantities[product.id] > 0) {
+        const card =
 
-        card.classList.add("selected");
+          document.getElementById(
+            "product-" +
+            product.id
+          );
 
-      } else {
 
-        card.classList.remove("selected");
+        quantityElement.textContent =
+
+          quantities[
+            product.id
+          ];
+
+
+        if (
+          quantities[
+            product.id
+          ] > 0
+        ) {
+
+          card.classList.add(
+            "selected"
+          );
+
+        } else {
+
+          card.classList.remove(
+            "selected"
+          );
+
+        }
 
       }
+    );
 
-    });
 
     updateSummary();
 
   }
 
 
-  /* =====================================
+  /* ==========================================
      ZUSAMMENFASSUNG
-  ===================================== */
+  ========================================== */
 
   function updateSummary() {
 
     const summaryList =
-      document.getElementById("summaryList");
+
+      document.getElementById(
+        "summaryList"
+      );
+
 
     summaryList.innerHTML = "";
+
 
     let totalBottles = 0;
 
@@ -762,52 +1015,85 @@
     let hasItems = false;
 
 
-    products.forEach(product => {
+    products.forEach(
+      product => {
 
-      const quantity =
-        quantities[product.id];
+        const quantity =
 
-      if (quantity > 0) {
-
-        hasItems = true;
-
-        totalBottles += quantity;
-
-        totalVolume +=
-          quantity * product.volume;
+          quantities[
+            product.id
+          ] || 0;
 
 
-        const item =
-          document.createElement("div");
+        if (
+          quantity > 0
+        ) {
 
-        item.className =
-          "summary-item";
+          hasItems = true;
 
-        item.innerHTML = `
 
-          <span>
-            ${product.name}
-          </span>
+          totalBottles +=
+            quantity;
 
-          <strong>
-            ${quantity} Flasche${quantity !== 1 ? "n" : ""}
-          </strong>
 
-        `;
+          totalVolume +=
 
-        summaryList.appendChild(item);
+            quantity *
+            Number(
+              product.volume_liter
+            );
+
+
+          const item =
+
+            document.createElement(
+              "div"
+            );
+
+
+          item.className =
+            "summary-item";
+
+
+          item.innerHTML = `
+
+            <span>
+
+              ${escapeHtml(
+                product.name
+              )}
+
+            </span>
+
+            <strong>
+
+              ${quantity} ×
+
+            </strong>
+
+          `;
+
+
+          summaryList.appendChild(
+            item
+          );
+
+        }
 
       }
+    );
 
-    });
 
-
-    if (!hasItems) {
+    if (
+      !hasItems
+    ) {
 
       summaryList.innerHTML = `
 
         <div style="color:#938a83;">
+
           Noch keine Getränke ausgewählt.
+
         </div>
 
       `;
@@ -815,202 +1101,490 @@
     }
 
 
-    document.getElementById("summaryTotal").textContent =
+    document
+      .getElementById(
+        "summaryTotal"
+      )
+      .textContent =
 
-      totalBottles +
-      " Flasche" +
-      (totalBottles !== 1 ? "n" : "") +
-      " · " +
-      formatLiter(totalVolume);
+        totalBottles +
+        " Flasche" +
+        (
+          totalBottles !== 1
+            ? "n"
+            : ""
+        ) +
+        " · " +
+        formatLiter(
+          totalVolume
+        );
 
 
-    document.getElementById("saveButton").disabled =
-      !hasItems;
+    document
+      .getElementById(
+        "saveButton"
+      )
+      .disabled =
+        !hasItems;
 
   }
 
 
-  /* =====================================
+  /* ==========================================
      ENTNAHME SPEICHERN
-  ===================================== */
+  ========================================== */
 
-  function saveWithdrawal() {
+  async function saveWithdrawal() {
 
-    let items = [];
-
-    let totalBottles = 0;
-
-    products.forEach(product => {
-
-      const quantity =
-        quantities[product.id];
-
-      if (quantity > 0) {
-
-        items.push({
-
-          product: product.name,
-
-          quantity: quantity,
-
-          volume: product.volume
-
-        });
-
-        totalBottles += quantity;
-
-      }
-
-    });
-
-
-    if (items.length === 0) {
+    if (
+      !selectedEmployee
+    ) {
 
       return;
 
     }
 
 
-    const withdrawal = {
+    const items =
 
-      id: crypto.randomUUID(),
+      products
 
-      employee: selectedEmployee,
+        .filter(
+          product =>
 
-      createdAt: new Date().toISOString(),
+            quantities[
+              product.id
+            ] > 0
 
-      items: items
+        )
+
+        .map(
+          product => ({
+
+            product_id:
+              product.id,
+
+            quantity:
+              quantities[
+                product.id
+              ]
+
+          })
+        );
+
+
+    if (
+      items.length === 0
+    ) {
+
+      return;
+
+    }
+
+
+    const saveButton =
+
+      document.getElementById(
+        "saveButton"
+      );
+
+
+    saveButton.disabled =
+      true;
+
+
+    saveButton.textContent =
+      "WIRD GESPEICHERT...";
+
+
+    try {
+
+
+      /* --------------------------------------
+         1. WITHDRAWAL ERSTELLEN
+      -------------------------------------- */
+
+      const withdrawalData =
+
+        await supabaseRequest(
+
+          "withdrawals",
+
+          {
+
+            method:
+              "POST",
+
+            body: {
+
+              employee_id:
+                selectedEmployee.id,
+
+              status:
+                "completed"
+
+            },
+
+            returnRepresentation:
+              true
+
+          }
+
+        );
+
+
+      if (
+        !withdrawalData ||
+        !withdrawalData[0]
+      ) {
+
+        throw new Error(
+          "Entnahme konnte nicht erstellt werden."
+        );
+
+      }
+
+
+      const withdrawalId =
+
+        withdrawalData[0].id;
+
+
+      /* --------------------------------------
+         2. POSITIONEN ERSTELLEN
+      -------------------------------------- */
+
+      const itemRows =
+
+        items.map(
+          item => ({
+
+            withdrawal_id:
+              withdrawalId,
+
+            product_id:
+              item.product_id,
+
+            quantity:
+              item.quantity
+
+          })
+        );
+
+
+      await supabaseRequest(
+
+        "withdrawal_items",
+
+        {
+
+          method:
+            "POST",
+
+          body:
+            itemRows
+
+        }
+
+      );
+
+
+      /* --------------------------------------
+         3. ERFOLG ANZEIGEN
+      -------------------------------------- */
+
+      const totalBottles =
+
+        items.reduce(
+
+          (
+            sum,
+            item
+          ) =>
+
+            sum +
+            item.quantity,
+
+          0
+
+        );
+
+
+      document
+        .getElementById(
+          "successText"
+        )
+        .textContent =
+
+          selectedEmployee.name +
+          " hat " +
+          totalBottles +
+          " Flasche" +
+          (
+            totalBottles !== 1
+              ? "n"
+              : ""
+          ) +
+          " entnommen.";
+
+
+      showScreen(
+        "successScreen"
+      );
+
+
+      setTimeout(
+        resetApp,
+        2000
+      );
+
+
+    } catch (error) {
+
+      console.error(
+        "Speicherfehler:",
+        error
+      );
+
+
+      showError(
+
+        "productError",
+
+        "Die Entnahme konnte nicht gespeichert werden. Bitte erneut versuchen."
+
+      );
+
+
+      saveButton.disabled =
+        false;
+
+
+      saveButton.textContent =
+
+        "✓ ENTNAHME SPEICHERN";
+
+    }
+
+  }
+
+
+  /* ==========================================
+     APP ZURÜCKSETZEN
+  ========================================== */
+
+  function resetApp() {
+
+    selectedEmployee =
+      null;
+
+
+    quantities = {};
+
+
+    showScreen(
+      "employeeScreen"
+    );
+
+  }
+
+
+  /* ==========================================
+     SCREEN WECHSELN
+  ========================================== */
+
+  function showScreen(
+    screenId
+  ) {
+
+    document
+      .querySelectorAll(
+        ".screen"
+      )
+      .forEach(
+        screen => {
+
+          screen.classList.remove(
+            "active"
+          );
+
+        }
+      );
+
+
+    document
+      .getElementById(
+        screenId
+      )
+      .classList.add(
+        "active"
+      );
+
+  }
+
+
+  /* ==========================================
+     FEHLER ANZEIGEN
+  ========================================== */
+
+  function showError(
+    elementId,
+    message
+  ) {
+
+    const element =
+
+      document.getElementById(
+        elementId
+      );
+
+
+    element.textContent =
+      message;
+
+
+    element.style.display =
+      "block";
+
+
+    setTimeout(
+      function() {
+
+        element.style.display =
+          "none";
+
+      },
+      6000
+    );
+
+  }
+
+
+  /* ==========================================
+     DATUM & UHRZEIT
+  ========================================== */
+
+  function updateDateTime() {
+
+    const now =
+      new Date();
+
+
+    const options = {
+
+      weekday:
+        "long",
+
+      day:
+        "2-digit",
+
+      month:
+        "2-digit",
+
+      year:
+        "numeric",
+
+      hour:
+        "2-digit",
+
+      minute:
+        "2-digit"
 
     };
 
 
-    /*
-
-      VORLÄUFIG:
-
-      Die Daten werden lokal im Browser gespeichert.
-
-      Im nächsten Schritt verbinden wir diese Funktion
-
-      mit Supabase.
-
-    */
-
-
-    let withdrawals =
-      JSON.parse(
-        localStorage.getItem(
-          "withdrawals"
-        ) || "[]"
-      );
-
-
-    withdrawals.push(withdrawal);
-
-
-    localStorage.setItem(
-
-      "withdrawals",
-
-      JSON.stringify(withdrawals)
-
-    );
-
-
-    document.getElementById("successText").textContent =
-
-      selectedEmployee +
-      " hat " +
-      totalBottles +
-      " Flasche" +
-      (totalBottles !== 1 ? "n" : "") +
-      " entnommen.";
-
-
-    showScreen("successScreen");
-
-
-    setTimeout(function() {
-
-      resetApp();
-
-    }, 2000);
-
-  }
-
-
-  /* =====================================
-     APP ZURÜCKSETZEN
-  ===================================== */
-
-  function resetApp() {
-
-    selectedEmployee = null;
-
-    quantities = {};
-
-    showScreen("employeeScreen");
-
-  }
-
-
-  /* =====================================
-     BILDSCHIRM WECHSELN
-  ===================================== */
-
-  function showScreen(screenId) {
-
     document
-      .querySelectorAll(".screen")
-      .forEach(screen => {
+      .getElementById(
+        "dateTime"
+      )
+      .textContent =
 
-        screen.classList.remove("active");
-
-      });
-
-
-    document
-      .getElementById(screenId)
-      .classList.add("active");
+        now.toLocaleDateString(
+          "de-DE",
+          options
+        );
 
   }
 
 
-  /* =====================================
-     FORMATE
-  ===================================== */
+  /* ==========================================
+     FORMATIERUNG
+  ========================================== */
 
-  function formatVolume(volume) {
+  function formatVolume(
+    volume
+  ) {
 
-    return volume
-      .toLocaleString("de-DE", {
-        minimumFractionDigits: 3,
-        maximumFractionDigits: 3
-      })
-      .replace(/0+$/, "")
-      .replace(/,$/, "") +
+    const number =
+      Number(volume);
+
+
+    return number
+      .toLocaleString(
+        "de-DE",
+        {
+
+          minimumFractionDigits:
+            0,
+
+          maximumFractionDigits:
+            3
+
+        }
+      ) +
       " l";
 
   }
 
 
-  function formatLiter(volume) {
+  function formatLiter(
+    volume
+  ) {
 
-    return volume
-      .toLocaleString("de-DE", {
-        minimumFractionDigits: 3,
-        maximumFractionDigits: 3
-      })
-      .replace(/0+$/, "")
-      .replace(/,$/, "") +
+    return Number(volume)
+      .toLocaleString(
+        "de-DE",
+        {
+
+          minimumFractionDigits:
+            0,
+
+          maximumFractionDigits:
+            3
+
+        }
+      ) +
       " Liter";
 
   }
 
 
-  /* =====================================
-     APP STARTEN
-  ===================================== */
+  /* ==========================================
+     SICHERHEIT
+  ========================================== */
+
+  function escapeHtml(
+    text
+  ) {
+
+    const div =
+      document.createElement(
+        "div"
+      );
+
+
+    div.textContent =
+      text;
+
+
+    return div.innerHTML;
+
+  }
+
+
+  /* ==========================================
+     START
+  ========================================== */
 
   initialize();
 
