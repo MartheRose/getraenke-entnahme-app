@@ -1,0 +1,1365 @@
+<!DOCTYPE html>
+
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Getränke-Auswertung</title>
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f7f5f2;
+      color: #2d2926;
+    }
+
+    header {
+      background: #7a1f2b;
+      color: white;
+      padding: 20px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .header-title {
+      font-size: 28px;
+      font-weight: 700;
+    }
+
+    .header-date {
+      font-size: 16px;
+      text-align: right;
+    }
+
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 30px 20px 50px;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 25px;
+      flex-wrap: wrap;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 32px;
+    }
+
+    button {
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .back-button {
+      background: white;
+      color: #7a1f2b;
+      border: 2px solid #7a1f2b;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .back-button:hover {
+      background: #f7eeee;
+    }
+
+    .filters {
+      background: white;
+      border: 1px solid #ddd6d0;
+      border-radius: 15px;
+      padding: 20px;
+      margin-bottom: 25px;
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      align-items: end;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .filter-group label {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    input,
+    select {
+      padding: 11px 12px;
+      border: 1px solid #ccc4bd;
+      border-radius: 8px;
+      font-size: 16px;
+      background: white;
+    }
+
+    .filter-button {
+      background: #7a1f2b;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .reset-button {
+      background: #e8e2dd;
+      color: #3a3430;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .summary-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    .summary-card {
+      background: white;
+      border: 1px solid #ddd6d0;
+      border-radius: 15px;
+      padding: 20px;
+    }
+
+    .summary-label {
+      color: #77706a;
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+
+    .summary-value {
+      color: #7a1f2b;
+      font-size: 28px;
+      font-weight: 700;
+    }
+
+    .table-container {
+      background: white;
+      border-radius: 15px;
+      border: 1px solid #ddd6d0;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 650px;
+    }
+
+    th {
+      background: #f0ebe7;
+      text-align: left;
+      padding: 15px;
+      font-size: 14px;
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 15px;
+      border-top: 1px solid #eee9e5;
+      font-size: 15px;
+    }
+
+    tr:hover td {
+      background: #faf8f6;
+    }
+
+    .quantity {
+      font-weight: 700;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 50px;
+      color: #77706a;
+      font-size: 18px;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 50px;
+      color: #77706a;
+      font-size: 18px;
+    }
+
+    .error {
+      background: #f8d7da;
+      color: #721c24;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      display: none;
+    }
+
+    .export-button {
+      background: #39734a;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    @media (max-width: 700px) {
+
+      header {
+        padding: 15px;
+      }
+
+      .header-title {
+        font-size: 20px;
+      }
+
+      .header-date {
+        font-size: 12px;
+      }
+
+      main {
+        padding: 20px 12px 40px;
+      }
+
+      h1 {
+        font-size: 25px;
+      }
+
+      .summary-cards {
+        grid-template-columns: 1fr;
+      }
+
+      .filters {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .filter-group,
+      .filter-button,
+      .reset-button,
+      .export-button {
+        width: 100%;
+      }
+
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+<header>
+
+  <div class="header-title">
+    GETRÄNKE-AUSWERTUNG
+  </div>
+
+  <div class="header-date" id="dateTime"></div>
+
+</header>
+
+<main>
+
+  <div class="top-bar">
+
+```
+<h1>
+  Alle Entnahmen
+</h1>
+
+<button
+  class="back-button"
+  onclick="window.location.href='index.html'"
+>
+  ← Zur Entnahme
+</button>
+```
+
+  </div>
+
+  <div
+    id="errorMessage"
+    class="error"
+  ></div>
+
+  <div class="filters">
+
+```
+<div class="filter-group">
+
+  <label for="dateFrom">
+    Von
+  </label>
+
+  <input
+    type="date"
+    id="dateFrom"
+  >
+
+</div>
+
+
+<div class="filter-group">
+
+  <label for="dateTo">
+    Bis
+  </label>
+
+  <input
+    type="date"
+    id="dateTo"
+  >
+
+</div>
+
+
+<div class="filter-group">
+
+  <label for="employeeFilter">
+    Mitarbeiter
+  </label>
+
+  <select id="employeeFilter">
+
+    <option value="">
+      Alle Mitarbeiter
+    </option>
+
+  </select>
+
+</div>
+
+
+<button
+  class="filter-button"
+  onclick="applyFilters()"
+>
+  Filtern
+</button>
+
+
+<button
+  class="reset-button"
+  onclick="resetFilters()"
+>
+  Zurücksetzen
+</button>
+
+
+<button
+  class="export-button"
+  onclick="exportCSV()"
+>
+  CSV exportieren
+</button>
+```
+
+  </div>
+
+  <div class="summary-cards">
+
+```
+<div class="summary-card">
+
+  <div class="summary-label">
+    Entnahmen
+  </div>
+
+  <div
+    class="summary-value"
+    id="totalWithdrawals"
+  >
+    0
+  </div>
+
+</div>
+
+
+<div class="summary-card">
+
+  <div class="summary-label">
+    Flaschen
+  </div>
+
+  <div
+    class="summary-value"
+    id="totalBottles"
+  >
+    0
+  </div>
+
+</div>
+
+
+<div class="summary-card">
+
+  <div class="summary-label">
+    Liter
+  </div>
+
+  <div
+    class="summary-value"
+    id="totalLiters"
+  >
+    0
+  </div>
+
+</div>
+```
+
+  </div>
+
+  <div class="table-container">
+
+```
+<div
+  id="loading"
+  class="loading"
+>
+  Entnahmen werden geladen...
+</div>
+
+
+<div
+  id="empty"
+  class="empty"
+  style="display:none;"
+>
+  Keine Entnahmen gefunden.
+</div>
+
+
+<table
+  id="withdrawalTable"
+  style="display:none;"
+>
+
+  <thead>
+
+    <tr>
+
+      <th>
+        Datum & Uhrzeit
+      </th>
+
+      <th>
+        Mitarbeiter
+      </th>
+
+      <th>
+        Getränk
+      </th>
+
+      <th>
+        Menge
+      </th>
+
+      <th>
+        Volumen
+      </th>
+
+    </tr>
+
+  </thead>
+
+  <tbody
+    id="withdrawalTableBody"
+  ></tbody>
+
+</table>
+```
+
+  </div>
+
+</main>
+
+<script>
+
+  const SUPABASE_URL =
+    "https://sbiykoqewpotxpliyrsg.supabase.co";
+
+  const SUPABASE_KEY =
+    "sb_publishable_88GzkUHIG028vaNlh2S1RQ_DZqJb_Y7";
+
+
+  let allRows = [];
+
+  let filteredRows = [];
+
+
+  async function supabaseRequest(
+    endpoint
+  ) {
+
+    const response = await fetch(
+
+      SUPABASE_URL +
+      "/rest/v1/" +
+      endpoint,
+
+      {
+
+        headers: {
+
+          "apikey":
+            SUPABASE_KEY,
+
+          "Authorization":
+            "Bearer " +
+            SUPABASE_KEY,
+
+          "Content-Type":
+            "application/json"
+
+        }
+
+      }
+
+    );
+
+
+    if (!response.ok) {
+
+      const error =
+        await response.text();
+
+      throw new Error(
+        error
+      );
+
+    }
+
+
+    return await response.json();
+
+  }
+
+
+  async function loadData() {
+
+    try {
+
+      const data =
+
+        await supabaseRequest(
+
+          "withdrawal_items" +
+
+          "?select=" +
+
+          "id,quantity,created_at," +
+
+          "withdrawals!inner(" +
+
+            "id,employee_id,created_at," +
+
+            "employees!inner(id,name)," +
+
+            "status" +
+
+          ")," +
+
+          "products!inner(" +
+
+            "id,name,volume_liter,unit" +
+
+          ")" +
+
+          "&order=created_at.desc"
+
+        );
+
+
+      allRows =
+        data || [];
+
+
+      filteredRows =
+        [...allRows];
+
+
+      populateEmployees();
+
+      renderTable();
+
+
+    } catch (error) {
+
+      console.error(
+        error
+      );
+
+
+      showError(
+
+        "Die Entnahmen konnten nicht geladen werden."
+
+      );
+
+    }
+
+  }
+
+
+  function populateEmployees() {
+
+    const select =
+
+      document.getElementById(
+        "employeeFilter"
+      );
+
+
+    const employeeMap =
+      new Map();
+
+
+    allRows.forEach(
+      row => {
+
+        const employee =
+
+          row.withdrawals
+            ?.employees;
+
+
+        if (
+          employee
+        ) {
+
+          employeeMap.set(
+
+            employee.id,
+
+            employee.name
+
+          );
+
+        }
+
+      }
+    );
+
+
+    employeeMap.forEach(
+
+      (
+        name,
+        id
+      ) => {
+
+        const option =
+          document.createElement(
+            "option"
+          );
+
+
+        option.value =
+          id;
+
+
+        option.textContent =
+          name;
+
+
+        select.appendChild(
+          option
+        );
+
+      }
+
+    );
+
+  }
+
+
+  function renderTable() {
+
+    const tbody =
+
+      document.getElementById(
+        "withdrawalTableBody"
+      );
+
+
+    tbody.innerHTML = "";
+
+
+    let totalBottles = 0;
+
+    let totalLiters = 0;
+
+
+    filteredRows.forEach(
+      row => {
+
+        const employee =
+
+          row.withdrawals
+            ?.employees;
+
+
+        const product =
+          row.products;
+
+
+        const quantity =
+
+          Number(
+            row.quantity
+          );
+
+
+        const volume =
+
+          Number(
+            product?.volume_liter ||
+            0
+          );
+
+
+        totalBottles +=
+          quantity;
+
+
+        totalLiters +=
+
+          quantity *
+          volume;
+
+
+        const tr =
+          document.createElement(
+            "tr"
+          );
+
+
+        tr.innerHTML = `
+
+          <td>
+
+            ${formatDate(
+              row.withdrawals?.created_at
+            )}
+
+          </td>
+
+          <td>
+
+            ${escapeHtml(
+              employee?.name ||
+              "Unbekannt"
+            )}
+
+          </td>
+
+          <td>
+
+            ${escapeHtml(
+              product?.name ||
+              "Unbekannt"
+            )}
+
+          </td>
+
+          <td class="quantity">
+
+            ${quantity}
+
+          </td>
+
+          <td>
+
+            ${formatLiter(
+              quantity *
+              volume
+            )}
+
+          </td>
+
+        `;
+
+
+        tbody.appendChild(
+          tr
+        );
+
+      }
+    );
+
+
+    document
+      .getElementById(
+        "totalWithdrawals"
+      )
+      .textContent =
+
+        new Set(
+
+          filteredRows.map(
+
+            row =>
+              row.withdrawals?.id
+
+          )
+
+        ).size;
+
+
+    document
+      .getElementById(
+        "totalBottles"
+      )
+      .textContent =
+        totalBottles;
+
+
+    document
+      .getElementById(
+        "totalLiters"
+      )
+      .textContent =
+
+        formatLiter(
+          totalLiters
+        );
+
+
+    document
+      .getElementById(
+        "loading"
+      )
+      .style.display =
+        "none";
+
+
+    if (
+      filteredRows.length === 0
+    ) {
+
+      document
+        .getElementById(
+          "empty"
+        )
+        .style.display =
+          "block";
+
+
+      document
+        .getElementById(
+          "withdrawalTable"
+        )
+        .style.display =
+          "none";
+
+    } else {
+
+      document
+        .getElementById(
+          "empty"
+        )
+        .style.display =
+          "none";
+
+
+      document
+        .getElementById(
+          "withdrawalTable"
+        )
+        .style.display =
+          "table";
+
+    }
+
+  }
+
+
+  function applyFilters() {
+
+    const dateFrom =
+
+      document
+        .getElementById(
+          "dateFrom"
+        )
+        .value;
+
+
+    const dateTo =
+
+      document
+        .getElementById(
+          "dateTo"
+        )
+        .value;
+
+
+    const employeeId =
+
+      document
+        .getElementById(
+          "employeeFilter"
+        )
+        .value;
+
+
+    filteredRows =
+
+      allRows.filter(
+        row => {
+
+          const date =
+
+            new Date(
+              row.withdrawals
+                ?.created_at
+            );
+
+
+          const dateString =
+
+            date
+              .toLocaleDateString(
+                "sv-SE"
+              );
+
+
+          const matchesFrom =
+
+            !dateFrom ||
+            dateString >=
+            dateFrom;
+
+
+          const matchesTo =
+
+            !dateTo ||
+            dateString <=
+            dateTo;
+
+
+          const matchesEmployee =
+
+            !employeeId ||
+
+            row.withdrawals
+              ?.employee_id ===
+              employeeId;
+
+
+          return (
+
+            matchesFrom &&
+
+            matchesTo &&
+
+            matchesEmployee
+
+          );
+
+        }
+
+      );
+
+
+    renderTable();
+
+  }
+
+
+  function resetFilters() {
+
+    document
+      .getElementById(
+        "dateFrom"
+      )
+      .value = "";
+
+
+    document
+      .getElementById(
+        "dateTo"
+      )
+      .value = "";
+
+
+    document
+      .getElementById(
+        "employeeFilter"
+      )
+      .value = "";
+
+
+    filteredRows =
+      [...allRows];
+
+
+    renderTable();
+
+  }
+
+
+  function exportCSV() {
+
+    if (
+      filteredRows.length === 0
+    ) {
+
+      alert(
+        "Es gibt keine Daten zum Exportieren."
+      );
+
+      return;
+
+    }
+
+
+    const headers = [
+
+      "Datum",
+
+      "Mitarbeiter",
+
+      "Getränk",
+
+      "Menge",
+
+      "Liter"
+
+    ];
+
+
+    const rows =
+
+      filteredRows.map(
+        row => {
+
+          const employee =
+
+            row.withdrawals
+              ?.employees;
+
+
+          const product =
+            row.products;
+
+
+          const quantity =
+
+            Number(
+              row.quantity
+            );
+
+
+          const liters =
+
+            quantity *
+            Number(
+              product?.volume_liter ||
+              0
+            );
+
+
+          return [
+
+            formatDate(
+              row.withdrawals
+                ?.created_at
+            ),
+
+            employee?.name ||
+              "",
+
+            product?.name ||
+              "",
+
+            quantity,
+
+            liters
+              .toFixed(3)
+              .replace(
+                ".",
+                ","
+              )
+
+          ];
+
+        }
+
+      );
+
+
+    let csv =
+
+      [
+
+        headers,
+
+        ...rows
+
+      ]
+
+      .map(
+        row =>
+
+          row.map(
+            value =>
+
+              `"${String(
+                value
+              ).replace(
+                /"/g,
+                '""'
+              )}"`
+
+          )
+
+          .join(";")
+
+      )
+
+      .join("\n");
+
+
+    csv =
+      "\uFEFF" +
+      csv;
+
+
+    const blob =
+
+      new Blob(
+
+        [csv],
+
+        {
+          type:
+            "text/csv;charset=utf-8;"
+        }
+
+      );
+
+
+    const url =
+
+      URL.createObjectURL(
+        blob
+      );
+
+
+    const link =
+
+      document.createElement(
+        "a"
+      );
+
+
+    link.href =
+      url;
+
+
+    link.download =
+
+      "getraenke-entnahmen.csv";
+
+
+    link.click();
+
+
+    URL.revokeObjectURL(
+      url
+    );
+
+  }
+
+
+  function formatDate(
+    value
+  ) {
+
+    if (
+      !value
+    ) {
+
+      return "-";
+
+    }
+
+
+    return new Date(
+      value
+    ).toLocaleString(
+      "de-DE",
+      {
+
+        day:
+          "2-digit",
+
+        month:
+          "2-digit",
+
+        year:
+          "numeric",
+
+        hour:
+          "2-digit",
+
+        minute:
+          "2-digit"
+
+      }
+
+    );
+
+  }
+
+
+  function formatLiter(
+    value
+  ) {
+
+    return Number(
+      value
+    )
+    .toLocaleString(
+      "de-DE",
+      {
+
+        minimumFractionDigits:
+          0,
+
+        maximumFractionDigits:
+          3
+
+      }
+    ) +
+    " l";
+
+  }
+
+
+  function escapeHtml(
+    text
+  ) {
+
+    const div =
+      document.createElement(
+        "div"
+      );
+
+
+    div.textContent =
+      text;
+
+
+    return div.innerHTML;
+
+  }
+
+
+  function showError(
+    message
+  ) {
+
+    const element =
+
+      document.getElementById(
+        "errorMessage"
+      );
+
+
+    element.textContent =
+      message;
+
+
+    element.style.display =
+      "block";
+
+
+    document
+      .getElementById(
+        "loading"
+      )
+      .style.display =
+        "none";
+
+  }
+
+
+  function updateDateTime() {
+
+    const now =
+      new Date();
+
+
+    document
+      .getElementById(
+        "dateTime"
+      )
+      .textContent =
+
+        now.toLocaleString(
+          "de-DE",
+          {
+
+            weekday:
+              "long",
+
+            day:
+              "2-digit",
+
+            month:
+              "2-digit",
+
+            year:
+              "numeric",
+
+            hour:
+              "2-digit",
+
+            minute:
+              "2-digit"
+
+          }
+
+        );
+
+  }
+
+
+  updateDateTime();
+
+
+  setInterval(
+    updateDateTime,
+    1000
+  );
+
+
+  loadData();
+
+</script>
+
+</body>
+</html>
