@@ -8,7 +8,6 @@
   <title>Getränke-Auswertung</title>
 
   <style>
-
     * {
       box-sizing: border-box;
     }
@@ -160,25 +159,18 @@
       border: 1px solid #ddd6d0;
       border-radius: 15px;
       padding: 20px;
-      min-height: 115px;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-start;
     }
 
     .summary-label {
       color: #77706a;
       font-size: 14px;
-      margin-bottom: 12px;
-      line-height: 1.2;
+      margin-bottom: 8px;
     }
 
     .summary-value {
       color: #7a1f2b;
       font-size: 28px;
       font-weight: 700;
-      line-height: 1;
-      margin: 0;
     }
 
     .table-container {
@@ -241,7 +233,6 @@
     }
 
     @media (max-width: 700px) {
-
       header {
         padding: 15px;
       }
@@ -278,11 +269,9 @@
       .pdf-button {
         width: 100%;
       }
-
     }
 
     @media print {
-
       header {
         background: white;
         color: black;
@@ -313,9 +302,7 @@
       tr:hover td {
         background: white;
       }
-
     }
-
   </style>
 
 </head>
@@ -323,27 +310,21 @@
 <body>
 
 <header>
-
   <div class="header-title">
     GETRÄNKE-AUSWERTUNG
   </div>
 
-  <div
-    class="header-date"
-    id="dateTime"
-  ></div>
-
+  <div class="header-date" id="dateTime"></div>
 </header>
 
 <main>
 
   <div class="top-bar">
+    <h1>
+      Alle Entnahmen
+    </h1>
 
 ```
-<h1>
-  Alle Entnahmen
-</h1>
-
 <button
   class="back-button"
   onclick="window.location.href='index.html'"
@@ -363,7 +344,6 @@
 
 ```
 <div class="filter-group">
-
   <label for="dateFrom">
     Von
   </label>
@@ -372,12 +352,9 @@
     type="date"
     id="dateFrom"
   >
-
 </div>
 
-
 <div class="filter-group">
-
   <label for="dateTo">
     Bis
   </label>
@@ -386,26 +363,19 @@
     type="date"
     id="dateTo"
   >
-
 </div>
 
-
 <div class="filter-group">
-
   <label for="employeeFilter">
     Mitarbeiter
   </label>
 
   <select id="employeeFilter">
-
     <option value="">
       Alle Mitarbeiter
     </option>
-
   </select>
-
 </div>
-
 
 <button
   class="filter-button"
@@ -414,7 +384,6 @@
   Filtern
 </button>
 
-
 <button
   class="reset-button"
   onclick="resetFilters()"
@@ -422,14 +391,12 @@
   Zurücksetzen
 </button>
 
-
 <button
   class="export-button"
   onclick="exportCSV()"
 >
   CSV exportieren
 </button>
-
 
 <button
   class="pdf-button"
@@ -445,7 +412,6 @@
 
 ```
 <div class="summary-card">
-
   <div class="summary-label">
     Entnahmen
   </div>
@@ -456,12 +422,9 @@
   >
     0
   </div>
-
 </div>
 
-
 <div class="summary-card">
-
   <div class="summary-label">
     Flaschen
   </div>
@@ -472,12 +435,9 @@
   >
     0
   </div>
-
 </div>
 
-
 <div class="summary-card">
-
   <div class="summary-label">
     Liter
   </div>
@@ -486,9 +446,8 @@
     class="summary-value"
     id="totalLiters"
   >
-    0 l
+    0
   </div>
-
 </div>
 ```
 
@@ -504,25 +463,21 @@
   Entnahmen werden geladen...
 </div>
 
-
 <div
   id="empty"
   class="empty"
-  style="display: none;"
+  style="display:none;"
 >
   Keine Entnahmen gefunden.
 </div>
 
-
 <table
   id="withdrawalTable"
-  style="display: none;"
+  style="display:none;"
 >
 
   <thead>
-
     <tr>
-
       <th>
         Datum & Uhrzeit
       </th>
@@ -542,11 +497,8 @@
       <th>
         Volumen
       </th>
-
     </tr>
-
   </thead>
-
 
   <tbody
     id="withdrawalTableBody"
@@ -573,38 +525,22 @@
   let filteredRows = [];
 
 
-  async function supabaseRequest(
-    endpoint
-  ) {
+  async function supabaseRequest(endpoint) {
 
-    const response =
-      await fetch(
+    const response = await fetch(
+      SUPABASE_URL +
+      "/rest/v1/" +
+      endpoint,
+      {
+        method: "GET",
 
-        SUPABASE_URL +
-        "/rest/v1/" +
-        endpoint,
-
-        {
-
-          method: "GET",
-
-          headers: {
-
-            "apikey":
-              SUPABASE_KEY,
-
-            "Authorization":
-              "Bearer " +
-              SUPABASE_KEY,
-
-            "Content-Type":
-              "application/json"
-
-          }
-
+        headers: {
+          "apikey": SUPABASE_KEY,
+          "Authorization": "Bearer " + SUPABASE_KEY,
+          "Content-Type": "application/json"
         }
-
-      );
+      }
+    );
 
 
     if (!response.ok) {
@@ -612,14 +548,11 @@
       const errorText =
         await response.text();
 
-
       throw new Error(
-
         "Supabase-Fehler " +
         response.status +
         ": " +
         errorText
-
       );
 
     }
@@ -634,43 +567,38 @@
 
     try {
 
-      const data =
+      const data = await supabaseRequest(
 
-        await supabaseRequest(
+        "withdrawal_items" +
 
-          "withdrawal_items" +
+        "?select=" +
 
-          "?select=" +
+        "id,quantity,created_at," +
 
-          "id,quantity,created_at," +
+        "withdrawals!inner(" +
 
-          "withdrawals!inner(" +
+          "id,employee_id,created_at," +
 
-            "id,employee_id,created_at," +
+          "employees(id,name)," +
 
-            "employees(id,name)," +
+          "status" +
 
-            "status" +
+        ")," +
 
-          ")," +
+        "products!inner(" +
 
-          "products!inner(" +
+          "id,name,volume_liter,unit" +
 
-            "id,name,volume_liter,unit" +
+        ")" +
 
-          ")" +
+        "&order=created_at.desc"
 
-          "&order=created_at.desc"
-
-        );
+      );
 
 
       console.log(
-
         "Geladene Entnahmen:",
-
         data
-
       );
 
 
@@ -690,11 +618,8 @@
     } catch (error) {
 
       console.error(
-
         "Fehler beim Laden der Entnahmen:",
-
         error
-
       );
 
 
@@ -714,74 +639,50 @@
   function populateEmployees() {
 
     const select =
-
       document.getElementById(
-
         "employeeFilter"
-
       );
 
 
-    select.innerHTML =
+    select.innerHTML = `
 
-      `
+      <option value="">
+        Alle Mitarbeiter
+      </option>
 
-        <option value="">
-
-          Alle Mitarbeiter
-
-        </option>
-
-      `;
+    `;
 
 
     const employeeMap =
-
       new Map();
 
 
     allRows.forEach(
-
       row => {
 
         const employee =
-
           row.withdrawals?.employees;
 
 
         if (employee) {
 
           employeeMap.set(
-
             employee.id,
-
             employee.name
-
           );
 
         }
 
       }
-
     );
 
 
     employeeMap.forEach(
-
-      (
-
-        name,
-
-        id
-
-      ) => {
+      (name, id) => {
 
         const option =
-
           document.createElement(
-
             "option"
-
           );
 
 
@@ -794,13 +695,10 @@
 
 
         select.appendChild(
-
           option
-
         );
 
       }
-
     );
 
   }
@@ -809,11 +707,8 @@
   function renderTable() {
 
     const tbody =
-
       document.getElementById(
-
         "withdrawalTableBody"
-
       );
 
 
@@ -826,11 +721,9 @@
 
 
     filteredRows.forEach(
-
       row => {
 
         const employee =
-
           row.withdrawals?.employees;
 
 
@@ -839,251 +732,153 @@
 
 
         const quantity =
-
-          Number(
-
-            row.quantity || 0
-
-          );
+          Number(row.quantity || 0);
 
 
         const volume =
-
           Number(
-
             product?.volume_liter || 0
-
           );
 
 
         totalBottles +=
-
           quantity;
 
 
         totalLiters +=
-
-          quantity *
-          volume;
+          quantity * volume;
 
 
         const tr =
-
           document.createElement(
-
             "tr"
-
           );
 
 
-        tr.innerHTML =
+        tr.innerHTML = `
 
-          `
+          <td>
+            ${formatDate(
+              row.withdrawals?.created_at
+            )}
+          </td>
 
-            <td>
+          <td>
+            ${escapeHtml(
+              employee?.name ||
+              "Unbekannt"
+            )}
+          </td>
 
-              ${formatDate(
+          <td>
+            ${escapeHtml(
+              product?.name ||
+              "Unbekannt"
+            )}
+          </td>
 
-                row.withdrawals?.created_at
+          <td class="quantity">
+            ${quantity}
+          </td>
 
-              )}
+          <td>
+            ${formatLiter(
+              quantity * volume
+            )}
+          </td>
 
-            </td>
-
-
-            <td>
-
-              ${escapeHtml(
-
-                employee?.name ||
-
-                "Unbekannt"
-
-              )}
-
-            </td>
-
-
-            <td>
-
-              ${escapeHtml(
-
-                product?.name ||
-
-                "Unbekannt"
-
-              )}
-
-            </td>
-
-
-            <td class="quantity">
-
-              ${quantity}
-
-            </td>
-
-
-            <td>
-
-              ${formatLiter(
-
-                quantity *
-                volume
-
-              )}
-
-            </td>
-
-          `;
+        `;
 
 
         tbody.appendChild(
-
           tr
-
         );
 
       }
-
     );
 
 
     const withdrawalIds =
-
       filteredRows
-
         .map(
-
           row =>
-
             row.withdrawals?.id
-
         )
-
-        .filter(
-
-          Boolean
-
-        );
+        .filter(Boolean);
 
 
     document
-
       .getElementById(
-
         "totalWithdrawals"
-
       )
-
       .textContent =
 
         new Set(
-
           withdrawalIds
-
         ).size;
 
 
     document
-
       .getElementById(
-
         "totalBottles"
-
       )
-
       .textContent =
-
         totalBottles;
 
 
     document
-
       .getElementById(
-
         "totalLiters"
-
       )
-
       .textContent =
 
         formatLiter(
-
           totalLiters
-
         );
 
 
     document
-
       .getElementById(
-
         "loading"
-
       )
-
       .style.display =
-
         "none";
 
 
     if (
-
       filteredRows.length === 0
-
     ) {
 
       document
-
         .getElementById(
-
           "empty"
-
         )
-
         .style.display =
-
           "block";
 
 
       document
-
         .getElementById(
-
           "withdrawalTable"
-
         )
-
         .style.display =
-
           "none";
 
     } else {
 
       document
-
         .getElementById(
-
           "empty"
-
         )
-
         .style.display =
-
           "none";
 
 
       document
-
         .getElementById(
-
           "withdrawalTable"
-
         )
-
         .style.display =
-
           "table";
 
     }
@@ -1094,121 +889,70 @@
   function applyFilters() {
 
     const dateFrom =
-
       document
-
         .getElementById(
-
           "dateFrom"
-
         )
-
         .value;
 
 
     const dateTo =
-
       document
-
         .getElementById(
-
           "dateTo"
-
         )
-
         .value;
 
 
     const employeeId =
-
       document
-
         .getElementById(
-
           "employeeFilter"
-
         )
-
         .value;
 
 
     filteredRows =
-
       allRows.filter(
-
         row => {
 
           const date =
-
             new Date(
-
-              row.withdrawals
-
-                ?.created_at
-
+              row.withdrawals?.created_at
             );
 
 
           const dateString =
-
-            date
-
-              .toLocaleDateString(
-
-                "sv-SE"
-
-              );
-
-
-          const matchesFrom =
-
-            !dateFrom ||
-
-            dateString >=
-
-            dateFrom;
-
-
-          const matchesTo =
-
-            !dateTo ||
-
-            dateString <=
-
-            dateTo;
-
-
-          const matchesEmployee =
-
-            !employeeId ||
-
-            String(
-
-              row.withdrawals
-
-                ?.employee_id
-
-            ) ===
-
-            String(
-
-              employeeId
-
+            date.toLocaleDateString(
+              "sv-SE"
             );
 
 
+          const matchesFrom =
+            !dateFrom ||
+            dateString >= dateFrom;
+
+
+          const matchesTo =
+            !dateTo ||
+            dateString <= dateTo;
+
+
+          const matchesEmployee =
+            !employeeId ||
+            String(
+              row.withdrawals?.employee_id
+            ) ===
+            String(employeeId);
+
+
           return (
-
             matchesFrom &&
-
             matchesTo &&
-
             matchesEmployee
-
           );
 
         }
-
       );
 
 
@@ -1220,40 +964,27 @@
   function resetFilters() {
 
     document
-
       .getElementById(
-
         "dateFrom"
-
       )
-
       .value = "";
 
 
     document
-
       .getElementById(
-
         "dateTo"
-
       )
-
       .value = "";
 
 
     document
-
       .getElementById(
-
         "employeeFilter"
-
       )
-
       .value = "";
 
 
     filteredRows =
-
       [...allRows];
 
 
@@ -1265,15 +996,11 @@
   function exportCSV() {
 
     if (
-
       filteredRows.length === 0
-
     ) {
 
       alert(
-
         "Es gibt keine Daten zum Exportieren."
-
       );
 
       return;
@@ -1297,170 +1024,94 @@
 
 
     const rows =
-
       filteredRows.map(
-
         row => {
 
           const employee =
-
-            row.withdrawals
-
-              ?.employees;
+            row.withdrawals?.employees;
 
 
           const product =
-
             row.products;
 
 
           const quantity =
-
             Number(
-
               row.quantity || 0
-
             );
 
 
           const liters =
-
             quantity *
-
             Number(
-
-              product
-
-                ?.volume_liter ||
-
-              0
-
+              product?.volume_liter || 0
             );
 
 
           return [
 
             formatDate(
-
-              row.withdrawals
-
-                ?.created_at
-
+              row.withdrawals?.created_at
             ),
 
-            employee?.name ||
+            employee?.name || "",
 
-              "",
-
-            product?.name ||
-
-              "",
+            product?.name || "",
 
             quantity,
 
             liters
-
-              .toFixed(
-
-                3
-
-              )
-
-              .replace(
-
-                ".",
-
-                ","
-
-              )
+              .toFixed(3)
+              .replace(".", ",")
 
           ];
 
         }
-
       );
 
 
     let csv =
-
       [
-
         headers,
-
         ...rows
-
       ]
-
       .map(
-
         row =>
-
           row
-
             .map(
-
               value =>
-
-                `"${String(
-
-                  value
-
-                ).replace(
-
-                  /"/g,
-
-                  '""'
-
-                )}"`
-
+                `"${String(value)
+                  .replace(/"/g, '""')}"`
             )
-
             .join(";")
-
       )
-
       .join("\n");
 
 
     csv =
-
       "\uFEFF" +
-
       csv;
 
 
     const blob =
-
       new Blob(
-
         [csv],
-
         {
-
           type:
-
             "text/csv;charset=utf-8;"
-
         }
-
       );
 
 
     const url =
-
       URL.createObjectURL(
-
         blob
-
       );
 
 
     const link =
-
       document.createElement(
-
         "a"
-
       );
 
 
@@ -1469,14 +1120,11 @@
 
 
     link.download =
-
       "getraenke-entnahmen.csv";
 
 
     document.body.appendChild(
-
       link
-
     );
 
 
@@ -1484,16 +1132,12 @@
 
 
     document.body.removeChild(
-
       link
-
     );
 
 
     URL.revokeObjectURL(
-
       url
-
     );
 
   }
@@ -1502,15 +1146,11 @@
   function exportPDF() {
 
     if (
-
       filteredRows.length === 0
-
     ) {
 
       alert(
-
         "Es gibt keine Daten zum Exportieren."
-
       );
 
       return;
@@ -1519,22 +1159,16 @@
 
 
     const printWindow =
-
       window.open(
-
         "",
-
         "_blank"
-
       );
 
 
     if (!printWindow) {
 
       alert(
-
         "Das PDF-Fenster konnte nicht geöffnet werden. Bitte erlaube Pop-ups für diese Seite."
-
       );
 
       return;
@@ -1546,140 +1180,83 @@
 
 
     filteredRows.forEach(
-
       row => {
 
         const employee =
-
-          row.withdrawals
-
-            ?.employees;
+          row.withdrawals?.employees;
 
 
         const product =
-
           row.products;
 
 
         const quantity =
-
           Number(
-
             row.quantity || 0
-
           );
 
 
         const liters =
-
           quantity *
-
           Number(
-
-            product
-
-              ?.volume_liter ||
-
-            0
-
+            product?.volume_liter || 0
           );
 
 
-        tableRows +=
+        tableRows += `
 
-          `
+          <tr>
 
-            <tr>
+            <td>
+              ${escapeHtml(
+                formatDate(
+                  row.withdrawals?.created_at
+                )
+              )}
+            </td>
 
-              <td>
+            <td>
+              ${escapeHtml(
+                employee?.name ||
+                "Unbekannt"
+              )}
+            </td>
 
-                ${escapeHtml(
+            <td>
+              ${escapeHtml(
+                product?.name ||
+                "Unbekannt"
+              )}
+            </td>
 
-                  formatDate(
+            <td>
+              ${quantity}
+            </td>
 
-                    row.withdrawals
+            <td>
+              ${escapeHtml(
+                formatLiter(
+                  liters
+                )
+              )}
+            </td>
 
-                      ?.created_at
+          </tr>
 
-                  )
-
-                )}
-
-              </td>
-
-              <td>
-
-                ${escapeHtml(
-
-                  employee?.name ||
-
-                  "Unbekannt"
-
-                )}
-
-              </td>
-
-              <td>
-
-                ${escapeHtml(
-
-                  product?.name ||
-
-                  "Unbekannt"
-
-                )}
-
-              </td>
-
-              <td>
-
-                ${quantity}
-
-              </td>
-
-              <td>
-
-                ${escapeHtml(
-
-                  formatLiter(
-
-                    liters
-
-                  )
-
-                )}
-
-              </td>
-
-            </tr>
-
-          `;
+        `;
 
       }
-
     );
 
 
     const totalWithdrawals =
-
       new Set(
-
         filteredRows
-
           .map(
-
             row =>
-
               row.withdrawals?.id
-
           )
-
-          .filter(
-
-            Boolean
-
-          )
-
+          .filter(Boolean)
       ).size;
 
 
@@ -1689,328 +1266,192 @@
 
 
     filteredRows.forEach(
-
       row => {
 
         const quantity =
-
           Number(
-
             row.quantity || 0
-
           );
 
 
         const volume =
-
           Number(
-
-            row.products
-
-              ?.volume_liter ||
-
-            0
-
+            row.products?.volume_liter || 0
           );
 
 
         totalBottles +=
-
           quantity;
 
 
         totalLiters +=
-
-          quantity *
-
-          volume;
+          quantity * volume;
 
       }
-
     );
 
 
-    printWindow.document.write(
+    printWindow.document.write(`
 
-      `
+      <!DOCTYPE html>
 
-        <!DOCTYPE html>
+      <html lang="de">
 
-        <html lang="de">
+      <head>
 
-        <head>
+        <meta charset="UTF-8">
 
-          <meta charset="UTF-8">
+        <title>
+          Getränke-Auswertung
+        </title>
 
-          <title>
+        <style>
 
-            Getränke-Auswertung
+          body {
+            font-family: Arial, Helvetica, sans-serif;
+            margin: 30px;
+            color: #2d2926;
+          }
 
-          </title>
+          h1 {
+            color: #7a1f2b;
+            margin-bottom: 5px;
+          }
 
-          <style>
+          .date {
+            color: #77706a;
+            margin-bottom: 25px;
+          }
+
+          .summary {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 25px;
+          }
+
+          .summary div {
+            padding: 12px 18px;
+            border: 1px solid #ddd6d0;
+            border-radius: 8px;
+          }
+
+          table {
+            width: 100%;
+            border-collapse: collapse;
+          }
+
+          th {
+            background: #f0ebe7;
+            text-align: left;
+            padding: 10px;
+            border-bottom: 2px solid #7a1f2b;
+          }
+
+          td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd6d0;
+          }
+
+          @media print {
 
             body {
-
-              font-family:
-
-                Arial,
-
-                Helvetica,
-
-                sans-serif;
-
-              margin: 30px;
-
-              color: #2d2926;
-
+              margin: 10mm;
             }
 
+          }
 
-            h1 {
-
-              color: #7a1f2b;
-
-              margin-bottom: 5px;
-
-            }
-
-
-            .date {
-
-              color: #77706a;
-
-              margin-bottom: 25px;
-
-            }
-
-
-            .summary {
-
-              display: flex;
-
-              gap: 30px;
-
-              margin-bottom: 25px;
-
-            }
-
-
-            .summary div {
-
-              padding: 12px 18px;
-
-              border:
-
-                1px solid
-
-                #ddd6d0;
-
-              border-radius: 8px;
-
-            }
-
-
-            table {
-
-              width: 100%;
-
-              border-collapse:
-
-                collapse;
-
-            }
-
-
-            th {
-
-              background:
-
-                #f0ebe7;
-
-              text-align: left;
-
-              padding: 10px;
-
-              border-bottom:
-
-                2px solid
-
-                #7a1f2b;
-
-            }
-
-
-            td {
-
-              padding: 10px;
-
-              border-bottom:
-
-                1px solid
-
-                #ddd6d0;
-
-            }
-
-
-            @media print {
-
-              body {
-
-                margin: 10mm;
-
-              }
-
-            }
-
-          </style>
+        </style>
 
 ```
-    </head>
+  </head>
 
+  <body>
 
-    <body>
+    <h1>
+      Getränke-Auswertung
+    </h1>
 
-      <h1>
+    <div class="date">
+      Erstellt am:
+      ${new Date().toLocaleString("de-DE")}
+    </div>
 
-        Getränke-Auswertung
+    <div class="summary">
 
-      </h1>
-
-
-      <div class="date">
-
-        Erstellt am:
-
-        ${new Date()
-
-          .toLocaleString(
-
-            "de-DE"
-
-          )}
-
+      <div>
+        <strong>
+          Entnahmen:
+        </strong>
+        ${totalWithdrawals}
       </div>
 
-
-      <div class="summary">
-
-        <div>
-
-          <strong>
-
-            Entnahmen:
-
-          </strong>
-
-          ${totalWithdrawals}
-
-        </div>
-
-
-        <div>
-
-          <strong>
-
-            Flaschen:
-
-          </strong>
-
-          ${totalBottles}
-
-        </div>
-
-
-        <div>
-
-          <strong>
-
-            Liter:
-
-          </strong>
-
-          ${formatLiter(
-
-            totalLiters
-
-          )}
-
-        </div>
-
+      <div>
+        <strong>
+          Flaschen:
+        </strong>
+        ${totalBottles}
       </div>
 
+      <div>
+        <strong>
+          Liter:
+        </strong>
+        ${formatLiter(totalLiters)}
+      </div>
 
-      <table>
+    </div>
 
-        <thead>
+    <table>
 
-          <tr>
+      <thead>
 
-            <th>
+        <tr>
 
-              Datum & Uhrzeit
+          <th>
+            Datum & Uhrzeit
+          </th>
 
-            </th>
+          <th>
+            Mitarbeiter
+          </th>
 
-            <th>
+          <th>
+            Getränk
+          </th>
 
-              Mitarbeiter
+          <th>
+            Menge
+          </th>
 
-            </th>
+          <th>
+            Volumen
+          </th>
 
-            <th>
+        </tr>
 
-              Getränk
+      </thead>
 
-            </th>
+      <tbody>
 
-            <th>
+        ${tableRows}
 
-              Menge
+      </tbody>
 
-            </th>
+    </table>
 
-            <th>
+    <script>
 
-              Volumen
+      window.onload = function() {
+        window.print();
+      };
 
-            </th>
+    <\/script>
 
-          </tr>
+  </body>
 
-        </thead>
+  </html>
 
-
-        <tbody>
-
-          ${tableRows}
-
-        </tbody>
-
-      </table>
-
-
-      <script>
-
-        window.onload =
-
-          function() {
-
-            window.print();
-
-          };
-
-      <\/script>
-
-
-    </body>
-
-    </html>
-
-  `
-
-);
+`);
 
 
 printWindow.document.close();
@@ -2018,117 +1459,58 @@ printWindow.document.close();
 
 }
 
-function formatDate(
-
-```
-value
-```
-
-) {
+function formatDate(value) {
 
 ```
 if (!value) {
-
   return "-";
-
 }
 
 
 return new Date(
-
   value
-
 ).toLocaleString(
-
   "de-DE",
-
   {
-
-    day:
-
-      "2-digit",
-
-    month:
-
-      "2-digit",
-
-    year:
-
-      "numeric",
-
-    hour:
-
-      "2-digit",
-
-    minute:
-
-      "2-digit"
-
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
   }
-
 );
 ```
 
 }
 
-function formatLiter(
-
-```
-value
-```
-
-) {
+function formatLiter(value) {
 
 ```
 return Number(
-
   value
-
 )
-
-  .toLocaleString(
-
-    "de-DE",
-
-    {
-
-      minimumFractionDigits:
-
-        0,
-
-      maximumFractionDigits:
-
-        3
-
-    }
-
-  ) +
-
-  " l";
+.toLocaleString(
+  "de-DE",
+  {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 3
+  }
+) +
+" l";
 ```
 
 }
 
-function escapeHtml(
-
-```
-text
-```
-
-) {
+function escapeHtml(text) {
 
 ```
 const div =
-
   document.createElement(
-
     "div"
-
   );
 
 
 div.textContent =
-
   text;
 
 
@@ -2137,45 +1519,29 @@ return div.innerHTML;
 
 }
 
-function showError(
-
-```
-message
-```
-
-) {
+function showError(message) {
 
 ```
 const element =
-
   document.getElementById(
-
     "errorMessage"
-
   );
 
 
 element.textContent =
-
   message;
 
 
 element.style.display =
-
   "block";
 
 
 document
-
   .getElementById(
-
     "loading"
-
   )
-
   .style.display =
-
-    "none";
+  "none";
 ```
 
 }
@@ -2184,52 +1550,25 @@ function updateDateTime() {
 
 ```
 const now =
-
   new Date();
 
 
 document
-
   .getElementById(
-
     "dateTime"
-
   )
-
   .textContent =
 
     now.toLocaleString(
-
       "de-DE",
-
       {
-
-        weekday:
-
-          "long",
-
-        day:
-
-          "2-digit",
-
-        month:
-
-          "2-digit",
-
-        year:
-
-          "numeric",
-
-        hour:
-
-          "2-digit",
-
-        minute:
-
-          "2-digit"
-
+        weekday: "long",
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
       }
-
     );
 ```
 
@@ -2238,13 +1577,8 @@ document
 updateDateTime();
 
 setInterval(
-
-```
 updateDateTime,
-
 1000
-```
-
 );
 
 loadData();
